@@ -1,0 +1,39 @@
+[
+  {
+    "placeholder": "08:00",
+    "required": true,
+    "type": "time",
+    "name": "firstCheckInTime",
+    "label": "Hora da 1ª entrada",
+    "errors": "Necessária para o cálculo!",
+    "grouped": false
+  },
+  {
+    "placeholder": "12:00",
+    "required": false,
+    "type": "time",
+    "name": "firstCheckOutTime",
+    "label": "Hora da 1ª saída",
+    "errors": "Without an api key you cannot access this app",
+    "grouped": false
+  },
+  {
+    "placeholder": "13:30",
+    "required": false,
+    "type": "time",
+    "name": "secondCheckInTime",
+    "label": "Hora da 2ª entrada",
+    "errors": "You must insert a name",
+    "grouped": false
+  },
+
+  {
+    "placeholder": "18:00",
+    "required": false,
+    "type": "time",
+    "name": "secondCheckOutTime",
+    "label": "Hora da 2ª saída",
+    "errors": "Without an api key you cannot access this app",
+    "grouped": false
+  }
+]

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,800,900&display=swap"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Roboto"],
+            },
+            colors: {
+              current: "currentColor",
+              transparent: "transparent",
+              wine: "#3C023B",
+              bgPink: "#FD017E",
+              gradientOrange: "#FF8B0C",
+              gradientPink: "#FE0B81",
+              gradientViolet: "#6535D5",
+              gradientDarkViolet: "#2F244A",
+            },
+          },
+        },
+      };
+    </script>
+    <!-- <link href="/dist/output.css" rel="stylesheet" /> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+  </head>
+  <body>
+    <div id="root" class="h-screen w-screen max-w-full"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
