@@ -7,8 +7,7 @@ type TcheckValueKeys<T, V> = {
   [K in keyof T]-?: T[K] extends V ? K : never;
 }[keyof T];
 
-class FlexCalculator {
-  private readonly MIN_ENTER: 5 = 5;
+export default class FlexCalculator {
   private readonly MAX_LAUNCH_IN_MINUTES: 180 = 180;
   private readonly MIN_LAUNCH_IN_MINUTES: 60 = 60;
   private readonly TOTAL_JOURNEY_MIN: 510 = 510;
@@ -42,7 +41,7 @@ class FlexCalculator {
       ? this.stringfyMinuteInHour(this[prop].minutes)
       : clock;
 
-    // console.log(`is it working? ${prop}`, this[prop]);
+    console.log(`${prop}`, this[prop]);
   }
 
   private getJustHour(clock: string) {
@@ -75,13 +74,6 @@ class FlexCalculator {
     return this;
   }
 
-  private firstEnterIsValid() {
-    return (
-      this.firstCheckIn &&
-      this.getJustHour(this.firstCheckIn.clock) > this.MIN_ENTER
-    );
-  }
-
   computeMaxFirstCheckOut() {
     if (this.firstCheckIn) {
       this.checkSetter("maxFirstCheckOut", "", this.firstCheckIn.minutes + 360);
@@ -100,9 +92,9 @@ class FlexCalculator {
     this.checkSetter("firstCheckOut", clock);
     return this;
   }
-
+  // @rever para turnos noturnos
   computeFirstJourney() {
-    if (this.firstEnterIsValid() && this.firstCheckOut) {
+    if (this.firstCheckIn && this.firstCheckOut) {
       this.firstJourney =
         this.firstCheckOut.minutes - this.firstCheckIn.minutes;
     }
@@ -136,6 +128,7 @@ class FlexCalculator {
     return this;
   }
 
+  // @rever para turnos noturnos
   computeTotalLaunch() {
     if (this.firstCheckOut && this.secondCheckIn) {
       this.checkSetter(
@@ -163,6 +156,7 @@ class FlexCalculator {
     return this;
   }
 
+  // @rever para turnos noturnos
   computeSecondJourney() {
     if (this.secondCheckIn && this.secondCheckOut) {
       this.secondJourney =
@@ -171,6 +165,7 @@ class FlexCalculator {
     return this;
   }
 
+  // @rever para turnos noturnos
   computeTotalJourney() {
     if (this.firstJourney && this.secondJourney) {
       this.checkSetter(
@@ -181,5 +176,3 @@ class FlexCalculator {
     }
   }
 }
-
-export default FlexCalculator;
