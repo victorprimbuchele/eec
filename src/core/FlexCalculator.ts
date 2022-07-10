@@ -1,57 +1,49 @@
+type Tcheck = {
+  clock: string;
+  minutes: number;
+};
+
+type TcheckValueKeys<T, V> = {
+  [K in keyof T]-?: T[K] extends V ? K : never;
+}[keyof T];
+
 class FlexCalculator {
   private readonly MIN_ENTER: 5 = 5;
-  private readonly MAX_EXIT: 22 = 22;
   private readonly MAX_LAUNCH_IN_MINUTES: 180 = 180;
+  private readonly MIN_LAUNCH_IN_MINUTES: 60 = 60;
   private readonly TOTAL_JOURNEY_MIN: 510 = 510;
 
-  firstEnter = {
-    clock: '',
-    minutes: 0
-  };
-  
-  firstExit= {
-    clock: '',
-    minutes: 0
-  };
+  firstCheckIn = {} as Tcheck;
 
-  maxFirstExit = {
-    clock: '',
-    minutes: 0
-  };
+  firstCheckOut = {} as Tcheck;
+  maxFirstCheckOut = {} as Tcheck;
+  minFirstCheckOut = {} as Tcheck;
 
-  maxSecondEnter = {
-    clock: '',
-    minutes: 0
-  };
+  secondCheckIn = {} as Tcheck;
+  maxSecondCheckIn = {} as Tcheck;
+  minSecondCheckIn = {} as Tcheck;
 
-  secondEnter = {
-    clock: '',
-    minutes: 0
-  };
-
-  maxSecondExit = {
-    clock: '',
-    minutes: 0
-  };
-
-  secondExit = {
-    clock: '',
-    minutes: 0
-  };
+  secondCheckOut = {} as Tcheck;
+  maxSecondCheckOut = {} as Tcheck;
 
   firstJourney: number = 0;
-  
-  launch = {
-    clock: '',
-    minutes: 0
-  }
-
+  launch = {} as Tcheck;
   secondJourney: number = 0;
 
-  totalJourney = {
-    clock: '',
-    minutes: 0
-  };
+  totalJourney = {} as Tcheck;
+
+  private checkSetter(
+    prop: TcheckValueKeys<FlexCalculator, Tcheck>,
+    clock: string,
+    minutes?: number
+  ) {
+    this[prop].minutes = minutes ? minutes : this.timeInMinutes(clock);
+    this[prop].clock = minutes
+      ? this.stringfyMinuteInHour(this[prop].minutes)
+      : clock;
+
+    console.log(`is it working? ${prop}`, this[prop]);
+  }
 
   private getJustHour(clock: string) {
     return Number(clock.split(":")[0]);
@@ -65,102 +57,129 @@ class FlexCalculator {
     let hour: any = String(Math.floor(minutes / 60));
     const min = String(minutes % 60);
 
-    if(Number(hour) >= 24) {
-      hour = String(hour % 24)
+    if (Number(hour) >= 24) {
+      hour = String(hour % 24);
     }
 
-    return `${hour.length === 1 ? '0' + hour : hour}:${min.length === 1 ? '0' + min : min}`;
+    return `${hour.length === 1 ? "0" + hour : hour}:${
+      min.length === 1 ? "0" + min : min
+    }`;
   }
 
   private timeInMinutes(clock: string) {
     return this.getJustHour(clock) * 60 + this.getJustMinute(clock);
   }
 
-  setFirstEnter(clock: string) {
-    this.firstEnter.clock = clock;
-    this.firstEnter.minutes = this.timeInMinutes(clock);
-    return this
+  setFirstCheckIn(clock: string) {
+    this.checkSetter("firstCheckIn", clock);
+    return this;
   }
 
   private firstEnterIsValid() {
     return (
-      this.firstEnter && this.getJustHour(this.firstEnter.clock) > this.MIN_ENTER
+      this.firstCheckIn &&
+      this.getJustHour(this.firstCheckIn.clock) > this.MIN_ENTER
     );
   }
 
-  computeMaxFirstExit() {
-    if(this.firstEnter) {
-      this.maxFirstExit.minutes = this.firstEnter.minutes + 360;
-      this.maxFirstExit.clock = this.stringfyMinuteInHour(this.maxFirstExit.minutes)
+  computeMaxFirstCheckOut() {
+    if (this.firstCheckIn) {
+      this.checkSetter("maxFirstCheckOut", "", this.firstCheckIn.minutes + 360);
     }
-    return this
+    return this;
   }
 
-  setFirstExit(clock: string) {
-    this.firstExit.clock = clock;
-    this.firstExit.minutes = this.timeInMinutes(clock);
-    return this
+  computeMinFirstCheckOut() {
+    if (this.firstCheckIn) {
+      this.checkSetter("minFirstCheckOut", "", this.firstCheckIn.minutes + 150);
+    }
+    return this;
+  }
+
+  setFirstCheckOut(clock: string) {
+    this.checkSetter("firstCheckOut", clock);
+    return this;
   }
 
   computeFirstJourney() {
-    if (this.firstEnterIsValid() && this.firstExit) {
-      this.firstJourney = 
-        this.firstExit.minutes -
-        this.firstEnter.minutes;
+    if (this.firstEnterIsValid() && this.firstCheckOut) {
+      this.firstJourney =
+        this.firstCheckOut.minutes - this.firstCheckIn.minutes;
     }
-    return this
+    return this;
   }
 
-  computeMaxSecondEnter() {
-    if(this.firstExit) {
-      this.maxSecondEnter.minutes = this.firstExit.minutes + this.MAX_LAUNCH_IN_MINUTES
-      this.maxSecondEnter.clock = this.stringfyMinuteInHour(this.maxSecondEnter.minutes) 
+  computeMaxSecondCheckIn() {
+    if (this.firstCheckOut) {
+      this.checkSetter(
+        "maxSecondCheckIn",
+        "",
+        this.firstCheckOut.minutes + this.MAX_LAUNCH_IN_MINUTES
+      );
     }
-    return this
+    return this;
   }
 
-  setSecondEnter(clock: string) {
-    this.secondEnter.clock = clock;
-    this.secondEnter.minutes = this.timeInMinutes(clock);
-    return this
+  computeMinSecondCheckIn() {
+    if (this.firstCheckOut) {
+      this.checkSetter(
+        "minSecondCheckIn",
+        "",
+        this.firstCheckOut.minutes + this.MIN_LAUNCH_IN_MINUTES
+      );
+    }
+    return this;
+  }
+
+  setSecondCheckIn(clock: string) {
+    this.checkSetter("secondCheckIn", clock);
+    return this;
   }
 
   computeTotalLaunch() {
-    if(this.firstExit && this.secondEnter) {
-      this.launch.minutes = this.secondEnter.minutes - this.firstExit.minutes;
-      this.launch.clock = this.stringfyMinuteInHour(this.launch.minutes);
+    if (this.firstCheckOut && this.secondCheckIn) {
+      this.checkSetter(
+        "launch",
+        "",
+        this.secondCheckIn.minutes - this.firstCheckOut.minutes
+      );
     }
-    return this
+    return this;
   }
 
-  computeMaxSecondExit() {
-    if(this.firstJourney && this.secondEnter) {
-      this.maxSecondExit.minutes = (this.TOTAL_JOURNEY_MIN - this.firstJourney) + this.secondEnter.minutes;
-      this.maxSecondExit.clock = this.stringfyMinuteInHour(this.maxSecondExit.minutes);
+  computeMaxSecondCheckOut() {
+    if (this.firstJourney && this.secondCheckIn) {
+      this.checkSetter(
+        "maxSecondCheckOut",
+        "",
+        this.TOTAL_JOURNEY_MIN - this.firstJourney + this.secondCheckIn.minutes
+      );
     }
-    return this
+    return this;
   }
 
-  setSecondExit(clock: string) {
-    this.secondExit.clock = clock;
-    this.secondExit.minutes = this.timeInMinutes(clock);
-    return this
+  setSecondCheckOut(clock: string) {
+    this.checkSetter("secondCheckOut", clock);
+    return this;
   }
 
   computeSecondJourney() {
-    if(this.secondEnter && this.secondExit) {
-      this.secondJourney = this.secondExit.minutes - this.secondEnter.minutes;
+    if (this.secondCheckIn && this.secondCheckOut) {
+      this.secondJourney =
+        this.secondCheckOut.minutes - this.secondCheckIn.minutes;
     }
-    return this
+    return this;
   }
 
   computeTotalJourney() {
-    if(this.firstJourney && this.secondJourney) {
-      this.totalJourney.minutes = this.firstJourney + this.secondJourney;
-      this.totalJourney.clock = this.stringfyMinuteInHour(this.totalJourney.minutes);
-
+    if (this.firstJourney && this.secondJourney) {
+      this.checkSetter(
+        "totalJourney",
+        "",
+        this.firstJourney + this.secondJourney
+      );
     }
   }
-};
+}
 
 export default FlexCalculator;
