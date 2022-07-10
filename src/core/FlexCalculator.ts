@@ -42,7 +42,7 @@ class FlexCalculator {
       ? this.stringfyMinuteInHour(this[prop].minutes)
       : clock;
 
-    console.log(`is it working? ${prop}`, this[prop]);
+    // console.log(`is it working? ${prop}`, this[prop]);
   }
 
   private getJustHour(clock: string) {
